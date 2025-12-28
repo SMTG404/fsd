@@ -368,3 +368,140 @@ function CounterFunction() {
 
 export default CounterFunction;
 
+mport express from "express";
+import cors from "cors";
+import products from "./product.js";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
+
+//  connections
+const app = express();
+const PORT = 4000;
+
+//  middleware
+app.use(express.json());
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
+app.use(cors());
+
+//  rest api
+// root
+app.get("/", (req, res) => {
+    res.send("Hello express");
+});
+
+// get products
+app.get("/products", (req, res) => {
+    res.json(products);
+})
+
+// get 1 product
+app.get("/products/:id", (req, res) => {
+    const product = products.find(p => p.id === parseInt(req.params.id));
+    if(!product) return res.status(404).json({error: "not found"});
+    res.json(product);
+});
+
+// add new product
+app.post("/products", (req, res) => {
+    const product = {
+        id: products.length + 1,
+        ...req.body
+    };
+
+    products.push(product);
+    res.status(201).json(product);
+});
+
+// update product
+app.put("/products/:id", (req, res) => {
+    const product = products.find(p => p.id === parseInt(req.params.id));
+    if(!product) return res.status(404).json({error: "not found"});
+    Object.assign(product, req.body);
+    res.json(product);
+});
+
+// delete product
+app.delete("/products/:id", (req, res) => {
+    const index = products.findIndex(p => p.id === parseInt(req.params.id));
+    if(index === -1) return res.status(404).json({error: "not found"});
+    const deleted = products.splice(index, 1);
+    res.json(deleted[0]);
+});
+
+// listen
+app.listen(PORT, () => console.log(`REST API running on http://localhost:${PORT}`));
+
+
+//  graphql
+const typeDefs = `#graphql
+
+    type Product {
+        id: Int
+        name: String
+        price: Float
+    }
+
+    type Query {
+        products: [Product]
+        product(id: Int!): Product
+    }
+
+    type Mutation {
+        addProduct(name: String!, price: Float!): Product
+        updateProduct(id: Int!, name: String, price: Float): Product
+        deleteProduct(id: Int!): Product
+    }
+`;
+
+const resolvers = {
+    
+    Query: {
+        products: () => products,
+        product: (_, {id}) => products.find(p => p.id === id)
+    },
+
+    Mutation: {
+        addProduct: (_, {name, price}) => {
+            const newProduct = {id: products.length + 1, name, price}
+            products.push(newProduct);
+            return newProduct;
+        },
+
+        updateProduct: (_, {id, name, price}) => {
+            const product = products.find(p => p.id === id);
+            if(!product) return null;
+            if(name) product.name = name;
+            if(price) product.price = price;
+            return product;
+        },
+
+        deleteProduct: (_, {id}) => {
+            const index = products.findIndex(p => p.id === id);
+            if(index === -1) return null;
+            return products.splice(index, 1)[0]; 
+        }
+    }
+};
+
+
+async function startGQL() {
+    const server = new ApolloServer({ typeDefs, resolvers });
+    const { url } = await startStandaloneServer(server, {listen: {port: 5000}});
+    console.log(`Graphql is running on :${url}`);
+}
+
+startGQL();
+
+
+
+product.js
+
+let products = [
+    {id: 1, name: "Laptop", price: 5000},
+    {id: 2, name: "Mobile", price: 7000}
+];
+
+export default products;
