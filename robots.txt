@@ -1,0 +1,370 @@
+
+to do list 
+
+app
+
+import React from "react";
+import TodoFunctional from "./TodoFunctional";
+import TodoClass from "./TodoClass";
+
+function App() {
+  return (
+    <div>
+      <TodoFunctional />
+      <hr />
+      <TodoClass />
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+class 
+
+import React, { Component } from "react";
+
+class TodoClass extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      todos: [
+        { id: 1, task: "Learn React" },
+        { id: 2, task: "Complete Assignment" }
+      ],
+      newTask: ""
+    };
+  }
+
+  // Handle input
+  handleChange = (e) => {
+    this.setState({ newTask: e.target.value });
+  };
+
+  // Add task
+  addTask = () => {
+    if (this.state.newTask.trim() === "") return;
+
+    this.setState({
+      todos: [
+        ...this.state.todos,
+        { id: Date.now(), task: this.state.newTask }
+      ],
+      newTask: ""
+    });
+  };
+
+  // Delete task
+  deleteTask = (id) => {
+    this.setState({
+      todos: this.state.todos.filter(todo => todo.id !== id)
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        <h2>To-Do List (Class Component)</h2>
+
+        <input
+          type="text"
+          placeholder="Enter task"
+          value={this.state.newTask}
+          onChange={this.handleChange}
+        />
+        <button onClick={this.addTask}>Add</button>
+
+        <ul>
+          {this.state.todos.map(todo => (
+            <li key={todo.id}>
+              {todo.task}
+              <button onClick={() => this.deleteTask(todo.id)}>
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+}
+
+export default TodoClass;
+
+
+
+
+
+
+function 
+
+import React, { useState } from "react";
+
+function TodoFunctional() {
+  const [todos, setTodos] = useState([
+    { id: 1, task: "Learn React" },
+    { id: 2, task: "Complete Assignment" }
+  ]);
+
+  const [newTask, setNewTask] = useState("");
+
+  // Add task
+  const addTask = () => {
+    if (newTask.trim() === "") return;
+
+    setTodos([
+      ...todos,
+      { id: Date.now(), task: newTask }
+    ]);
+    setNewTask("");
+  };
+
+  // Delete task
+  const deleteTask = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <div>
+      <h2>To-Do List (Functional Component)</h2>
+
+      <input
+        type="text"
+        placeholder="Enter task"
+        value={newTask}
+        onChange={(e) => setNewTask(e.target.value)}
+      />
+      <button onClick={addTask}>Add</button>
+
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>
+            {todo.task}
+            <button onClick={() => deleteTask(todo.id)}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default TodoFunctional;
+
+
+
+
+
+
+
+products 
+
+app 
+
+import React from "react";
+
+import CounterClass from './CounterClass';
+import CounterFunction from './CounterFunction';
+
+// function app and return
+function App() {
+  return (
+    <div>
+      <h1>Counter Application</h1>
+      <CounterClass/>
+      <CounterFunction/>
+    </div>
+  );
+}
+
+export default App;
+
+
+class
+
+import React from "react";
+
+class CounterClass extends React.Component {
+    state = {
+        products: [
+            { id: 1, name: "Laptop" },
+            { id: 2, name: "Mobile" }
+        ],
+        newProduct: ""
+    };
+
+    addProduct = () => {
+        const { newProduct, products } = this.state;
+        if (newProduct.trim()) {
+            this.setState({
+                products: [...products, { id: Date.now(), name: newProduct }],
+                newProduct: ""
+            });
+        }
+    };
+
+    render() {
+        const { products, newProduct } = this.state;
+        return (
+            <div>
+                <h2>Class Component</h2>
+                <input
+                    type="text"
+                    value={newProduct}
+                    onChange={e => this.setState({ newProduct: e.target.value })}
+                    placeholder="Enter product"
+                />
+                <button onClick={this.addProduct}>Add</button>
+                <ul>
+                    {products.map(p => (
+                        <li key={p.id}>
+                            {p.name}
+                            <button onClick={() => this.setState({ products: products.filter(x => x.id !== p.id) })}>Delete</button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        );
+    }
+}
+
+export default CounterClass;
+
+
+function 
+
+
+
+import React, { useState } from "react";
+
+function CounterFunction() {
+    const [products, setProducts] = useState([
+        { id: 1, name: "Laptop" },
+        { id: 2, name: "Mobile" }
+    ]);
+    const [newProduct, setNewProduct] = useState("");
+
+    const addProduct = () => {
+        newProduct.trim() && setProducts([...products, { id: Date.now(), name: newProduct }]) && setNewProduct("");
+    };
+
+    return (
+        <div>
+            <h2>Functional Component</h2>
+            <input
+                type="text"
+                value={newProduct}
+                onChange={(e) => setNewProduct(e.target.value)}
+                placeholder="Enter product"
+            />
+            <button onClick={addProduct}>Add</button>
+            <ul>
+                {products.map(product => (
+                    <li key={product.id}>
+                        {product.name}
+                        <button onClick={() => setProducts(products.filter(p => p.id !== product.id))}>Delete</button>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+export default CounterFunction;
+
+
+
+
+
+
+import React from "react";
+
+import CounterClass from './CounterClass';
+import CounterFunction from './CounterFunction';
+
+// function app and return
+function App() {
+  return (
+    <div>
+      <h1>Counter Application</h1>
+      <CounterClass/>
+      <CounterFunction/>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+import React, { Component } from "react";
+
+class CounterClass extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {count: null};
+    }
+
+    componentDidMount() {
+        setTimeout( () => {
+            this.setState({ count: 0 });
+        }, 2);
+    }
+
+    render() {
+        const { count } = this.state;
+        if(count === null) return <h2>Loading Counter...</h2>;
+
+        return (
+            <div>
+                <h2>Class Counter : {count}</h2>
+                <button onClick={() => this.setState({count: count + 1})}>Increment</button>
+                <button onClick={() => this.setState({count: count - 1})}>Decrement</button>
+                <button onClick={() => this.setState({count: count * 2})}>Double</button>
+                <button onClick={() => this.setState({count: 0})}>Reset</button>
+            </div>
+        );
+    }
+}
+
+export default CounterClass;
+
+
+
+import React, { useState, useEffect } from "react";
+
+function CounterFunction() {
+
+    // count
+    const [count, setCount] = useState(null);
+
+    // useEffect
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setCount(0);
+        }, 2);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    // print loading when null
+    if (count === null) return <h2>Loading Counter...</h2>
+
+    // return buttons   
+    return (
+        <div>
+            <h2>Function Counter: {count}</h2>
+            <button onClick={() => setCount(count + 1)}>Increment</button>
+            <button onClick={() => setCount(count - 1)}>Decrement</button>
+            <button onClick={() => setCount(count * 2)}>Double</button>
+            <button onClick={() => setCount(0)}>Reset Counter</button>
+        </div>
+    );
+}
+
+export default CounterFunction;
+
