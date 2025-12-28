@@ -505,3 +505,145 @@ let products = [
 ];
 
 export default products;
+
+
+prog5
+App.js
+
+import React, { useState } from "react";
+import FilterIssue from './FilterIssue';
+import AddIssue from './AddIssue';
+import IssueList from './IssueList';
+
+function App() {
+  const [issues, setIssues] = useState([
+    { id: 1, title: "UI", status: "open"},
+    { id: 2, title: "UX", status: "open"},
+    { id: 3, title: "Screen", status: "closed"}
+  ]);
+
+  const [filter, setFilter] = useState('all');
+
+  const addIssue = (newIssue) => {
+    setIssues([...issues, { id: Date.now(), ...newIssue}]);
+  };
+
+  const filteredIssues = filter === "all"
+    ? issues
+    : issues.filter(issue => issue.status === filter);
+
+  return (
+    <div>
+      <h2>Issue Tracker</h2>
+      <AddIssue onAdd={addIssue}/>
+      <FilterIssue onFilter={setFilter}/>
+      <IssueList issues={filteredIssues}/>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+AddIssue
+
+import React, { useState } from "react";
+
+function AddIssue({ onAdd }) {
+    const [title, setTitle] = useState('');
+    const [status, setStatus] = useState('open');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if(title.trim()) {
+            onAdd({ title, status });
+            setTitle('');
+            setStatus('open');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input
+                type="text"
+                placeholder="Issue Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+            />
+
+            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+            </select>
+            <button type="submit">Add Issue</button>
+        </form>
+    );
+}
+
+export default AddIssue;
+
+
+
+
+Filter Issue
+
+import React, { useState } from "react";
+
+function FilterIssue({ onFilter }) {
+    const [selected, setSelected] = useState('all');
+
+    const handleChange = (e) => {
+        const value = e.target.value;
+        setSelected(value);
+        onFilter(value);
+    };
+
+    return (
+        <div>
+            <label>Filter Issue: </label>
+            <select value={selected} onChange={handleChange}>
+                <option value="all">All</option>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+            </select>
+        </div>
+    );
+}
+
+export default FilterIssue;
+
+
+
+
+
+
+Issue List 
+
+function IssueList({ issues }) {
+    return (
+        <table border={1} cellPadding={10}>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {issues.map(issue => (
+
+                <tr key={issue.id}>
+                    <th>{issue.title}</th>
+                    <th>{issue.status}</th>
+                </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+}
+
+export default IssueList;
